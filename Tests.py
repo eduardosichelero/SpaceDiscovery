@@ -1,5 +1,6 @@
 import pygame
 import winsound
+import tkinter 
 pygame.init()
 
 #Parte Visual da Janela
@@ -13,7 +14,11 @@ icone = pygame.image.load("space.jpg")
 pygame.display.set_icon(icone)
 pygame.mixer.music.load("trilha.mp3")
 pygame.mixer.music.play(-1)
+pygame.display.set_caption("Exemplo de Captura de Cliques")
 pontos = []
+nomes = []
+running = True
+VERMELHO = (255, 0, 0)
 
 def desenhar_linhas():
     if len(pontos) >= 2:
@@ -31,11 +36,9 @@ while running:
             if evento.button == 1:
                 x, y = pygame.mouse.get_pos()
                 pontos.append((x, y))
-    
     for ponto in pontos:
-        pygame.draw.circle(fundo, branco, ponto, 5)
+        pygame.draw.circle(fundo, VERMELHO, ponto, 5)
     desenhar_linhas()
-    
     
     tela.fill(branco)
     tela.blit(fundo, (0,0))
@@ -43,3 +46,4 @@ while running:
     tela.blit(texto, (1,10))
     pygame.display.update()
 pygame.quit()
+
