@@ -1,5 +1,7 @@
 import pygame
 import winsound
+import tkinter
+import tkinter.simpledialog as simpledialog
 pygame.init()
 
 #Parte Visual da Janela
@@ -20,6 +22,15 @@ def desenhar_linhas():
         for i in range(len(pontos) - 1):
             pygame.draw.line(fundo, branco, pontos[i], pontos[i+1], 2)
 #Looping Principal
+def open_dialog(event):
+    # Abre a caixa de diálogo para inserir o nome da estrela
+    root = tkinter.Tk()
+    root.withdraw()  # Esconde a janela principal do Tkinter
+    name = simpledialog.askstring("Nome da Estrela", "Insira o nome da estrela:")
+    return name
+NomeEstrela = ""
+PosicaoEstrela = (0, 0)
+
 running = True
 while running:
     for evento in pygame.event.get():
@@ -28,12 +39,21 @@ while running:
         elif evento.type == pygame.KEYDOWN and evento.key== pygame.K_ESCAPE:
             running = False
         elif evento.type == pygame.MOUSEBUTTONUP:
+            NomeEstrela = open_dialog(evento)
+            PosicaoEstrela = evento.pos
             if evento.button == 1:
                 x, y = pygame.mouse.get_pos()
                 pontos.append((x, y))
+    if NomeEstrela:
+        pygame.font.Font(None, 20)
+        NomeTexto = fonte.render(NomeEstrela, True, branco)
+        PosicaoTexto = fonte.render(f"({PosicaoEstrela[1]}, {PosicaoEstrela[0]})", True, branco,0)
+        fundo.blit(NomeTexto, (PosicaoEstrela[0], PosicaoEstrela[1] + 0))
+        fundo.blit(PosicaoTexto, (PosicaoEstrela[0], PosicaoEstrela[1] + 0))
+    
     
     for ponto in pontos:
-        pygame.draw.circle(fundo, branco, ponto, 5)
+        pygame.draw.circle(fundo,branco, ponto, 5)
     desenhar_linhas()
     
     
