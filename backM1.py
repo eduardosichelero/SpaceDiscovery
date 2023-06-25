@@ -1,7 +1,8 @@
-import pygame
-from tkinter import simpledialog
 import math
+import pygame
 import winsound
+from tkinter import simpledialog
+
 pygame.init()
 
 tamanho = (1280, 720)
@@ -25,7 +26,7 @@ def mostrar_distancias(pos1, pos2):
     distancia = math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
     return round(distancia, 2)
 
-def desenhar_objetos():
+def desenhar_estrelas():
     for nome, pos in estrelas.items():
         pygame.draw.circle(tela, branco, pos, 4)
         fonte = pygame.font.Font(None, 20)
@@ -41,36 +42,42 @@ def desenhar_objetos():
                 y = (pos1[1] + pos2[1]) // 2
                 texto = fonte1.render(str(distancia), True, branco)
                 tela.blit(texto, (x, y))
-            except Exception as e:
+            except ValueError as e:
                 print(f"Erro ao calcular distância: {e}")
 
     if len(desconhecidos) > 1:
         pygame.draw.lines(tela, branco, False, desconhecidos)
 
 def salvar_historico():
-    with open("historico.txt", "w") as arquivo:
-        for nome, pos in estrelas.items():
-            arquivo.write(f"{nome},{pos[0]},{pos[1]}\n")
+    try:
+        with open("historico.txt", "w") as arquivo:
+            for nome, pos in estrelas.items():
+                arquivo.write(f"{nome},{pos[0]},{pos[1]}\n")
+    except IOError as e:
+        print(f"Erro ao salvar o histórico: {e}")
 
 def carregar_historico():
     estrelas.clear()
     pontos.clear()
     desconhecidos.clear()
-    with open("historico.txt", "r") as arquivo:
-        for linha in arquivo:
-            valores = linha.strip().split(",")
-            if len(valores) == 3:
-                try:
-                    nome, x, y = valores
-                    pos = (int(x), int(y))
-                    estrelas[nome] = pos
-                    if nome.startswith("desconhecido"):
-                        desconhecidos.append(pos)
-                    else:
-                        pontos.append(pos)
-                except Exception as e:
-                    print(f"Erro ao carregar histórico: {e}")
-    desenhar_objetos()
+    try:
+        with open("historico.txt", "r") as arquivo:
+            for linha in arquivo:
+                valores = linha.strip().split(",")
+                if len(valores) == 3:
+                    try:
+                        nome, x, y = valores
+                        pos = (int(x), int(y))
+                        estrelas[nome] = pos
+                        if nome.startswith("desconhecido"):
+                            desconhecidos.append(pos)
+                        else:
+                            pontos.append(pos)
+                    except ValueError as e:
+                        print(f"Erro ao carregar histórico: {e}")
+    except IOError as e:
+        print(f"Erro ao carregar o histórico: {e}")
+    desenhar_estrelas()
 
 running = True
 while running:
@@ -96,10 +103,10 @@ while running:
             carregar_historico()
 
     tela.blit(fundo, (0, 0))
-    desenhar_objetos()
-    texto1 = fonte1.render("Precione ESQ para Fechar o Programa:", True, branco)
-    texto2 = fonte1.render("Precione F10 para Apagar os Pontos:", True, branco)
-    texto3 = fonte1.render("Precione F11 para Carregar o Histórico:", True, branco)
+    desenhar_estrelas()
+    texto1 = fonte1.render("Pressione ESC para Fechar o Programa:", True, branco)
+    texto2 = fonte1.render("Pressione F10 para Apagar os Pontos:", True, branco)
+    texto3 = fonte1.render("Pressione F11 para Carregar o Histórico:", True, branco)
     tela.blit(texto1, (1, 10))
     tela.blit(texto2, (1, 28))
     tela.blit(texto3, (1, 45))
